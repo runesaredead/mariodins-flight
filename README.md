@@ -1,6 +1,4 @@
-<p align="center">
-  <img alt="Flappy Bird" src="img/flappy_bird.png" />
-</p>
+
 
 # Flappy Bird Clone for Mariodin
 This is a Flappy Bird clone built with HTML5 canvas and vanilla JavaScript. We simply reskinned Flappy Bird with custom assets. I do not own anything. You can play the original clone [here](https://mmarqs.github.io/FlappyBird/). Additionally, further down in this README is a list of [Game Controls](#game-controls).
