@@ -445,53 +445,29 @@ cvs.addEventListener("mousemove", function(event)
             break;
     }
 });
+// Two separate images for day & night
+const bgDayImage = new Image();
+bgDayImage.src = "img/background-day.png";   // Adjust paths if needed
+
+const bgNightImage = new Image();
+bgNightImage.src = "img/background-night.png";
 
 // BACKGROUND
-const background = 
-{
-    day_spriteX   : 0,
-    night_spriteX : 1211,
-    spriteY : 392,
-    spriteW : 552,
-    spriteH : 408,
-    x : 0,
-    y : 0,
-    w : 0,
-    h : 0,
+const background = {
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0,
 
-    stars : 
-    {
-        spriteX : 1211,
-        spriteY : 0,
-        spriteW : 552,
-        spriteH : 392,
-        y: 0,
-        h : 0
-    },
+    draw: function() {
+        // Decide which image to use based on your 'night' boolean
+        const bgImg = night ? bgNightImage : bgDayImage;
 
-    draw : function() 
-    {
-        let spriteX = night ? this.night_spriteX : this.day_spriteX;
-
-        ctx.drawImage(
-                        sprite_sheet, 
-                        spriteX, this.spriteY, 
-                        this.spriteW, this.spriteH, 
-                        this.x, this.y, 
-                        this.w, this.h
-                     );
-        if(night)
-        {
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.stars.spriteX, this.stars.spriteY, 
-                            this.stars.spriteW, this.stars.spriteH, 
-                            this.x, this.stars.y, 
-                            this.w, this.stars.h
-                         );
-        }
+        // Fill the entire canvas area
+        ctx.drawImage(bgImg, this.x, this.y, this.w, this.h);
     }
-}
+};
+
 
 // FOREGROUND
 const foreground = 
@@ -1470,12 +1446,9 @@ function canvasScale()
 
     // BACKGROUND
     background.x = 0;
-    background.y = cvs.height * 0.631;
+    background.y = 0;
     background.w = cvs.width;
-    background.h = background.w * 0.74;
-    //Stars for night mode
-    background.stars.y = background.y * 0.167;
-    background.stars.h = cvs.height - background.h;
+    background.h = cvs.height;
 
     // FOREGROUND
     foreground.x = 0;
@@ -1642,9 +1615,7 @@ window.addEventListener("load", () => {
 // DRAW
 function draw() 
 {
-    // Background color of canvas 
-    ctx.fillStyle = !night ? "#7BC5CD" : "#12284C"; 
-    ctx.fillRect(0, 0, cvs.width, cvs.height); 
+; 
 
     background.draw();
     pipes.draw();
