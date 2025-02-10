@@ -1465,7 +1465,7 @@ function canvasScale()
     bird.gravity = cvs.height * 0.0006;
     bird.jump = cvs.height * 0.01;
     bird.radius_x = cvs.width * 0.049;
-    bird.radius_y = cvs.height * 0.024;
+    bird.radius_y = cvs.height * 0.023;
 
     // PIPES
     for(let i = 0; i < pipes.position.length; i++)
