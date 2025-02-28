@@ -43,6 +43,75 @@ const state =
     gameOver : 3
 }
 
+// LEADERBOARD
+const leaderboard = {
+    scores: [],
+    visible: false,
+    
+    board: {
+        spriteX: 548, // Using same sprite as scoreboard background
+        spriteY: 0,
+        spriteW: 452,
+        spriteH: 232,
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0
+    },
+
+    button: {
+        spriteX: 388,
+        spriteY: 228,
+        spriteW: 160,
+        spriteH: 56,
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0,
+        isPressed: false
+    },
+
+    draw: function() {
+        // Draw button in home state
+        if(state.current == state.home) {
+            ctx.drawImage(
+                sprite_sheet,
+                this.button.spriteX, this.button.spriteY,
+                this.button.spriteW, this.button.spriteH,
+                this.button.x, this.button.y,
+                this.button.w, this.button.h
+            );
+        }
+
+        // Draw leaderboard if visible
+        if(this.visible) {
+            // Draw background
+            ctx.drawImage(
+                sprite_sheet,
+                this.board.spriteX, this.board.spriteY,
+                this.board.spriteW, this.board.spriteH,
+                this.board.x, this.board.y,
+                this.board.w, this.board.h
+            );
+
+            // Draw title
+            ctx.fillStyle = "#FFF";
+            ctx.font = "20px Teko";
+            ctx.fillText("TOP SCORES", this.board.x + this.board.w/2, this.board.y + 40);
+
+            // Draw scores
+            ctx.font = "16px Teko";
+            this.scores.slice(0, 5).forEach((score, i) => {
+                ctx.fillText(
+                    `${i+1}. ${score.address}: ${score.score}`,
+                    this.board.x + 20,
+                    this.board.y + 80 + (i * 30)
+                );
+            });
+        }
+    }
+};
+
 // CONTROL THE GAME
 // Control when the player clicks
 cvs.addEventListener("click", function(event) 
@@ -87,6 +156,17 @@ cvs.addEventListener("click", function(event)
                     SWOOSH.play();
                 }
             }         
+            // Leaderboard button
+            else if(clickX >= leaderboard.button.x && 
+                   clickX <= leaderboard.button.x + leaderboard.button.w &&
+                   clickY >= leaderboard.button.y && 
+                   clickY <= leaderboard.button.y + leaderboard.button.h) {
+                leaderboard.visible = !leaderboard.visible;
+                if(!mute) {
+                    SWOOSH.currentTime = 0;
+                    SWOOSH.play();
+                }
+            }
             break;
         case state.getReady:
             bird.flap();
@@ -1604,6 +1684,18 @@ function canvasScale()
     medal.centerY = cvs.height * 0.506;
     medal.animation_w = cvs.width * 0.034;
     medal.animation_h = cvs.height * 0.023;
+
+    // Leaderboard button
+    leaderboard.button.x = cvs.width * 0.359;
+    leaderboard.button.y = cvs.height * 0.659; // Below start button
+    leaderboard.button.w = cvs.width * 0.276;
+    leaderboard.button.h = cvs.height * 0.068;
+
+    // Leaderboard board
+    leaderboard.board.x = cvs.width * 0.107;
+    leaderboard.board.y = cvs.height * 0.355;
+    leaderboard.board.w = cvs.width * 0.782;
+    leaderboard.board.h = cvs.height * 0.289;
 }
 
 // When window loads or resizes
@@ -1615,8 +1707,6 @@ window.addEventListener("load", () => {
 // DRAW
 function draw() 
 {
-; 
-
     background.draw();
     pipes.draw();
     foreground.draw();
@@ -1627,6 +1717,7 @@ function draw()
     gameOver.draw();
     medal.draw();
     score.draw();
+    leaderboard.draw();
 }
 
 // UPDATE
@@ -1661,3 +1752,18 @@ function loop()
 }
 
 loop();
+
+// Listen for leaderboard updates from React
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'updateLeaderboard') {
+        leaderboard.scores = event.data.scores;
+    }
+});
+
+// Add to gameOver state to send score:
+if(state.current == state.gameOver) {
+    window.parent.postMessage({
+        type: 'gameEnd',
+        score: score.game_score
+    }, '*');
+}
